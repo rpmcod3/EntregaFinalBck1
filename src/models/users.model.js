@@ -1,6 +1,8 @@
 import { model, Schema } from "mongoose";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
-const userCollection = 'Users2'
+/* const userCollection = 'Users2' */
+const userCollection = 'Users'
 const userSchema = new Schema ({
 
     first_name: {
@@ -15,6 +17,8 @@ const userSchema = new Schema ({
     gender: String
 
 })
+
+userSchema.plugin(mongoosePaginate)
 
 export const UserModel = model(userCollection, userSchema)
 

@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose"
 
-const productCollection = 'product'
+const productCollection = 'products'
 
 const productSchema = new Schema ({
     titulo: String,

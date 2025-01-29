@@ -2,6 +2,7 @@
 export class ProductManager {
     constructor(model){
         this.model = model
+        this.product = []
     }
 
     async add(product){

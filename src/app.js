@@ -28,5 +28,5 @@ app.use('/api/carrito', CarritoRouter)
 
 
 app.listen(8080,() => {
-    console.log('Servidor conectado en 8080')
+    console.log('conectado 8080')
 })

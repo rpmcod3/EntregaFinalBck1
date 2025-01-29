@@ -1,1 +1,1 @@
-console.log ("ësto es js del lado cliente public")
+console.log ("")

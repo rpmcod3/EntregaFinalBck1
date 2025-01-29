@@ -11,12 +11,14 @@ const carritoSchema = new Schema({
                 type: Schema.Types.ObjectId,
                 ref: 'products'
             },
-            /*cantidad: Number,*/
+            cantidad: Number,
         }],
         default: []
     },
 })
 
+//hacia donde va la referencia cuando guardo un id 
+
+
 export const carritoModel = model(carritoColeccion, carritoSchema)
 
- 
