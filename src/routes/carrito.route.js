@@ -4,6 +4,10 @@ import { carritoModel } from "../models/carrito.model.js";
 
 const route = Router()
 
+route.get('/', async (req, res ) => {
+    const result = await carritoModel.find()
+    res.json({result})
+})
 
 
 route.post ('/', async(req, res ) => {
@@ -31,9 +35,6 @@ route.put ('/', async(req, res ) => {
 
 
 
-/* route.get('/', async (req, res ) => {
-    const result = await carritoModel.find()
-    res.json({result})
-}) */
+/* */
 
 export default route
