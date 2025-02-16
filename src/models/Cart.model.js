@@ -18,4 +18,12 @@ const cartSchema = new Schema({
     },
 });
 
+
+
+/* cartSchema.pre(['find', 'findOne', 'findById'], function (next) {
+    this.populate('products.product', '_id title price');
+    next();
+});
+ */
+
 export const cartModel = mongoose.model(cartCollection, cartSchema)

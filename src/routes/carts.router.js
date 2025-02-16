@@ -1,6 +1,6 @@
 import { Router } from "express";
-import ProductsManager from '../class/productManager.js';
-import CartsManager from "../class/cartsManager.js";
+import ProductsManager from '../managers/productManager.js';
+import CartsManager from "../managers/cartsManager.js";
 import { __dirname } from '../utils.js';
 import { cartModel } from '../models/Cart.model.js';
 
@@ -27,6 +27,9 @@ router.get('/:cid', async (req, res) => {
     res.status(status).json({ productList: cartFinded?.products });
 });
 
+
+
+
 router.put('/:cid', async (req, res) => {
     const { cid } = req.params;
     const { products } = req.body
@@ -46,6 +49,16 @@ router.put('/:cid', async (req, res) => {
     res.status(201).json({ message: 'Products limpio', cart: cartUpdated})
 
 });
+
+router.put('/:cid/product/:pid', async (req, res)=> {
+    const { cid } = req.params;
+    const { pid } = req.body;
+    const {newQuantity} = req.body;
+
+    const cartUpdated = await cartModel.updateProductQuantity(cid, pid, newQuantity);
+    res.status(201).json({message: 'Carrito actualizado', cart:cartUpdated})
+});
+
 
 
 router.post('/:cid/product/:pid', async (req, res) => {
@@ -85,8 +98,17 @@ router.delete('/:cid', async (req, res) => {
     })
 
     res.status(201).json({ message: 'Products clean', cart: cartUpdated})
-
 });
+
+router.delete('/:cid/product/:pid', async (req, res) => {
+    const { cid } = req.params;
+    const { pid } = req.params;
+    const cartUpdated = await cartModel.deleteProductFromCart(cid, pid);
+
+    res.status(201).json({ message: 'Products del carrito borrado', cart: cartUpdated});
+});
+
+
 
 
 

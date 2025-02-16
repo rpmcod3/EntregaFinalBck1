@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductsManager from '../class/productManager.js'
+import ProductsManager from '../managers/productManager.js'
 import { __dirname } from '../utils.js'
 import { socketServer } from "../index.js";
 import { productModel } from "../models/Product.model.js";

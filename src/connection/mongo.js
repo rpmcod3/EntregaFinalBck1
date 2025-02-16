@@ -4,7 +4,7 @@ import mongoose from "mongoose"
 export const mongoConnection = async () => {
     try{
         
-        await mongoose.connect(process.env.MONGO_URL, {dbName: 'Ecommerce'})
+        await mongoose.connect(process.env.MONGO_URL, {dbName: 'DDBB_Ecommerce'})
         console.log('BBDD conectada')
     } catch (e) {
         console.log(e)

@@ -1,12 +1,12 @@
 import express from 'express'
-import producsRoute from './routes/products.router.js'
+import productsRoute from './routes/products.router.js'
 import cartsRoute from './routes/carts.router.js'
 import homeRoute from './routes/home.router.js'
 import realTimeProducts from './routes/realtimeproducts.router.js'
 import { __dirname } from './utils.js'
 import handlebars from 'express-handlebars'
 import {Server} from 'socket.io'
-import ProductsManager from './class/productManager.js'
+import ProductsManager from './managers/productManager.js'
 import { mongoConnection } from './connection/mongo.js'
 
 const app = express()
@@ -21,13 +21,13 @@ app.set('view engine', 'handlebars')
 app.use(express.json())
 app.use(express.urlencoded({ extended:true }))
 app.use(express.static(__dirname + '/public'))
-app.use('/api/products', producsRoute)
+app.use('/api/products', productsRoute)
 app.use('/api/carts', cartsRoute)
 app.use('/home', homeRoute)
 app.use('/realtimeproducts', realTimeProducts) 
 
 const httpServer = app.listen(8080,()=>{
-    console.log("Servidor correctamente Iniciado")
+    console.log("Servidor correctamente Iniciado 8080")
 })
 
 export const socketServer = new Server(httpServer)
