@@ -4,4 +4,5 @@ Cambios
 
 *Editada carpeta class a managers
 *Agregados los metodos de carrito 
+*Agregados views de products
 
