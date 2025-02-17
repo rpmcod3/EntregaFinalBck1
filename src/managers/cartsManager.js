@@ -23,7 +23,7 @@ class CartsManager {
  
   async getAllCarts() {
     try {
-      const carts = await CartModel.find().populate('products.productId');
+      const carts = await CartModel.find().populate('products.product').lean();
       return carts;
     } catch (error) {
       console.error('Error al obtener los carritos:', error);

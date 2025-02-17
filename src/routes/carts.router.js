@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
     const { cid } = req.params;
 	
-    const cartFinded = await CartModel.findById(cid).populate('products.product');
+    const cartFinded = await CartModel.findById(cid).populate('products.product').lean();
 
     const status = cartFinded ? 200 : 404;
 
