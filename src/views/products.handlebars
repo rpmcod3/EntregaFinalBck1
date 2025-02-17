@@ -1,0 +1,58 @@
+<header>
+  <a href="/products" class="logo"> Camaras en Stock</a>
+
+  <nav>
+    <ul>
+      <li><a href="/upload" class="btn">Upload</a></li>
+      <li><a href="/carts" class="btn">Carrito</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div id="content">
+  {{#each products}}
+  <div class="card">
+    <img src="{{this.thumbnail}}" alt="{{this.title}}">
+    <div class="content">
+      <h3>{{this.title}}</h3>
+      <p>{{this.price}}</p>
+      <p>{{this.description}}</p>
+      <a href="/api/products/delete/{{this.id}}" class="btn">Eliminar</a>
+      <a href="/addToCar/{{this.id}}/addToCard" class="btn">Agregar carrito</a>
+    </div>
+  </div>
+  {{/each}}
+</div>
+
+<form action="/products" method="GET" id="filterForm">
+  <label for="query">Buscar:</label>
+  <input type="text" name="query" id="query" placeholder="Buscar producto..." value="{{query}}">
+  
+  <label for="sort">Ordenar:</label>
+  <select name="sort" id="sort">
+    <option value="" {{#unless sort}}selected{{/unless}}>Sin ordenar</option>
+    <option value="asc" {{#if (eq sort "asc")}}selected{{/if}}>Precio Ascendente</option>
+    <option value="desc" {{#if (eq sort "desc")}}selected{{/if}}>Precio Descendente</option>
+  </select>
+
+  <label for="limit">Productos por página:</label>
+  <input type="number" name="limit" id="limit" min="1" value="{{limit}}">
+
+  <button type="submit" class="btn">Filtrar</button>
+</form>
+
+<div id="pagination">
+  {{#if hasPrevPage}}
+    <a href="/products?page={{prevPage}}" class="btn">Página anterior</a>
+  {{else}}
+    <button class="btn disabled" disabled>Página anterior</button>
+  {{/if}}
+
+  <span class="current-page">Página {{currentPage}} de {{totalPages}}</span>
+
+  {{#if hasNextPage}}
+    <a href="/products?page={{nextPage}}" class="btn">Página siguiente</a>
+  {{else}}  
+    <button class="btn disabled" disabled>Página siguiente</button>
+  {{/if}}
+</div>

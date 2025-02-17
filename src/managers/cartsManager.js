@@ -1,71 +1,104 @@
-import { promises } from "node:dns";
-import fs from "node:fs";
-import ProductsManager from '../managers/productManager.js'
-import { __dirname } from '../utils.js'
+import mongoose from "mongoose";
+import ProductsManager from './productManager.js';
+import { CartModel } from "../models/Cart.model.js";
+import { ProductsModel } from "../models/Product.model.js";
 
-const productManager = new ProductsManager(__dirname + '/models/products.json');
+
+
+
+const productManager = new ProductsManager();
+
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL, {dbName: 'DDBB_Ecommerce'});
+    console.log('Conectado a MongoDB Atlas');
+  } catch (err) {
+    console.error('Error al conectar a MongoDB Atlas', err);
+  }
+};
+
 
 class CartsManager {
-  constructor(path) {
-    this.path = path;
-
-    this.cart = {};
-    this.cartList = [];
-    this.productsListToCart = [];
-  }
-
-  // Funciones para Carts
+ 
   async getAllCarts() {
-    const list = await fs.promises.readFile(this.path, "utf-8");
-    this.cartList = [...JSON.parse(list).carts];
-    return [...this.cartList];
-  }
-  async addCart() {
-    const newId = await productManager.setNewId();
-    await this.getAllCarts();
-    const newCart = { id: newId, products: [] };
-    this.cartList.push(newCart);
-    await fs.promises.writeFile(
-      this.path,
-      JSON.stringify({ carts: this.cartList })
-    );
-    return newId
-  }
-  async getCart(id) {
-    await this.getAllCarts();
-    if (this.cartList.some((obj) => obj.id == id)) {
-      this.cart = this.cartList.find((obj) => obj.id == id);
-      console.log("Producto Encontrado");
-      return this.cart;
-    } else {
-      console.log("ID no encontrado");
-      return null;
-    }
-  }
-  async addProductToCart(cid, pid) {
-    const productsList = await productManager.getAllProducts();
-    const cartsList = await this.getAllCarts();
-    if (productsList.some((obj) => obj.id == pid)) {
-      if (cartsList.some((obj) => obj.id == cid)) {
-        const prod = productsList.find( obj  => obj.id == pid);
-        const i = cartsList.findIndex( obj => obj.id == cid);
-        if (cartsList[i].products.some( obj => obj.id == prod.id)) {
-            const i2 = cartsList[i].products.findIndex( obj => obj.id == pid);
-            cartsList[i].products[i2].cuantity ++
-        } else {
-            cartsList[i].products.push({"id":prod.id, "cuantity":1});
-        }
-        this.cartList = cartsList
-        await fs.promises.writeFile(this.path,JSON.stringify({ carts: this.cartList })
-        );
-      } else {
-        console.log("No Existe el ID Carrito");
-      }
-    } else {
-      console.log("No Existe el ID producto");
+    try {
+      const carts = await CartModel.find().populate('products.productId');
+      return carts;
+    } catch (error) {
+      console.error('Error al obtener los carritos:', error);
+      throw error;
     }
   }
 
+  
+  async addCart() {
+    try {
+      const newCart = new Cart({ products: [] });
+      const savedCart = await newCart.save();
+      return savedCart._id;
+    } catch (error) {
+      console.error('Error al agregar un carrito:', error);
+      throw error;
+    }
+  }
+
+ 
+  async getCart(id) {
+    try {
+      const cart = await CartModel.findById(id).populate('products.productId');
+      if (cart) {
+        console.log('Carrito encontrado:', cart);
+        return cart;
+      } else {
+        console.log('Carrito no encontrado');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al obtener el carrito:', error);
+      throw error;
+    }
+  }
+
+ 
+  async addProductToCart(cid, pid) {
+    try {
+     
+      const product = await ProductsModel.findById(pid);
+      if (!product) {
+        console.log('Producto no encontrado');
+        return;
+      }
+
+    
+      const cart = await CartModel.findById(cid);
+      if (!cart) {
+        console.log('Carrito no encontrado');
+        return;
+      }
+
+    
+      const productIndex = cart.products.findIndex(
+        (item) => item.productId.toString() === pid
+      );
+
+      if (productIndex !== -1) {
+       
+        cart.products[productIndex].quantity++;
+      } else {
+        
+        cart.products.push({ productId: product._id, quantity: 1 });
+      }
+
+    
+      await cart.save();
+      console.log('Producto agregado al carrito');
+    } catch (error) {
+      console.error('Error al agregar el producto al carrito:', error);
+      throw error;
+    }
+  }
 }
 
 export default CartsManager;
+

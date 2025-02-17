@@ -10,8 +10,10 @@ const ProductSchema = new Schema({
     "thumbnail": String,
     "code": Number,
     "stock": Number,
-})
+    "category": String,
+});
 
 ProductSchema.plugin(mongoosePaginate)
 
-export const productModel = mongoose.model(productCollection, ProductSchema)
+export const ProductsModel = mongoose.model(productCollection, ProductSchema)
+

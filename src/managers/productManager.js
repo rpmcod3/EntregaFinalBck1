@@ -1,96 +1,116 @@
-import { promises } from 'node:dns'
-import fs from 'node:fs'
+import mongoose from "mongoose";
+/* import ProductsManager from './productManager.js'; */
+import { CartModel } from "../models/Cart.model.js";
+import { ProductsModel } from "../models/Product.model.js";
 
-class ProductsManager {
-    constructor(path){
-        this.path = path
 
-        this.product = {}
-        this.productsList = []
+
+
+
+const connectDB = async () => {
+    try {
+      await mongoose.connect(process.env.MONGO_URL, {dbName: 'DDBB_Ecommerce'});
+      console.log('Conectado a MongoDB Atlas');
+    } catch (err) {
+      console.error('Error al conectar a MongoDB Atlas', err);
     }
-
-    async setNewId(){
-        const now = await new Date();
-        return now.getTime();
-    }
-
+  };
   
-    async getProduct(id){
-        const list = await fs.promises.readFile(this.path, 'utf-8')
-        this.productsList = [...JSON.parse(list).products]
-        this.productsList.map((prod,i)=>{
-            if (prod.id == id) {
-                this.product = prod
-            }
-        })
-        return {...this.product}
-    }
-    async getAllProducts(){
-        const list = await fs.promises.readFile(this.path, 'utf-8')
-        this.productsList = [...JSON.parse(list).products]
-        return [...this.productsList]
-    }
-    async addProduct(product){
-        const newId = await this.setNewId()  
-        await this.getAllProducts();  
-        let newProduct = { 
-            "id": newId,
-            "description": "",
-            "title": "",
-            "code": "",
-            "price": 0,
-            "status": true,
-            "stock": 0,
-            "category": ""
-        }
-         
-        
-        product.description ? newProduct.description = product.description : null 
-        product.title ? newProduct.title = product.title : null
-        product.code ? newProduct.code = product.code : null
-        product.price ? newProduct.price = product.price : null
-        product.status ? newProduct.status = product.status : null
-        product.stock ? newProduct.stock = product.stock : null
-        product.category ? newProduct.category = product.category : null
-        this.productsList.push(newProduct) 
-        await fs.promises.writeFile(this.path,JSON.stringify({ products: this.productsList }))  
-    }
 
+  class ProductsManager {
+    constructor() {
+      this.product = {};
+      this.productsList = [];
+    }
+  
     
-    async updateProduct(product,id){
-        await this.getAllProducts();
-        if (this.productsList.some(obj => obj.id == id)) {
-            const prod = this.productsList.find(obj => obj.id == id)
-            product.title ? prod.title = product.title : null
-            product.description ? prod.description = product.description : null
-            product.code ? prod.code = product.code :null
-            product.price ? prod.price = product.price :null
-            product.status ? prod.status = product.status :null
-            product.stock ? prod.stock = product.stock :null
-            product.category ? prod.category = product.category :null
-
-            await fs.promises.writeFile(this.path,JSON.stringify({ products: this.productsList }))
-            console.log("Producto Modificado")
-        } else {
-            console.log("ID no encontrado")
+    async setNewId() {
+      const now = await new Date();
+      return now.getTime(); 
         }
+  
+    
+    async getProduct(id) {
+      try {
+        const product = await ProductsModel.findById(id);
+        return product ? { ...product.toObject() } : null; // 
+      } catch (error) {
+        console.error('Error al obtener el producto:', error);
+        throw error;
+      }
     }
-
-
-   
-    async deleteProduct(id){
-        await this.getAllProducts();
-        if (this.productsList.some(obj => obj.id == id)) {
-            const i = this.productsList.findIndex(obj => obj.id == id)
-            this.productsList.splice(i,1)
-            await fs.promises.writeFile(this.path,JSON.stringify({ products: this.productsList }))
-            console.log("Producto Eliminado")
+  
+  
+    async getAllProducts() {
+      try {
+        const products = await ProductsModel.find();
+        return products.map(product => product.toObject()); 
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
+        throw error;
+      }
+    }
+  
+    
+    async addProduct(product) {
+      try {
+        const newProduct = new Product({
+          title: product.title,
+          description: product.description || '',
+          code: product.code,
+          price: product.price || 0,
+          status: product.status || true,
+          stock: product.stock || 0,
+          category: product.category || '',
+        });
+  
+        const savedProduct = await newProduct.save(); 
+        console.log('Producto agregado:', savedProduct);
+        return savedProduct;
+      } catch (error) {
+        console.error('Error al agregar el producto:', error);
+        throw error;
+      }
+    }
+  
+  
+    async updateProduct(id, product) {
+      try {
+        const updatedProduct = await ProductsModel.findByIdAndUpdate(id, product, { new: true });
+        if (updatedProduct) {
+          console.log('Producto actualizado:', updatedProduct);
+          return updatedProduct;
         } else {
-            console.log("ID no encontrado")
+          console.log('Producto no encontrado');
+          return null;
         }
+      } catch (error) {
+        console.error('Error al actualizar el producto:', error);
+        throw error;
+      }
     }
+  
+    async deleteProduct(id) {
+      try {
+        const deletedProduct = await ProductsModel.findByIdAndDelete(id);
+        if (deletedProduct) {
+          console.log('Producto eliminado:', deletedProduct);
+          return deletedProduct;
+        } else {
+          console.log('Producto no encontrado');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        throw error;
+      }
+    }
+  }
+  
+  export default ProductsManager;
 
 
-}
 
-export default ProductsManager
+
+
+

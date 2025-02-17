@@ -2,7 +2,7 @@ import { Router } from "express";
 import ProductsManager from '../managers/productManager.js';
 import CartsManager from "../managers/cartsManager.js";
 import { __dirname } from '../utils.js';
-import { cartModel } from '../models/Cart.model.js';
+import { CartModel } from '../models/Cart.model.js';
 
 
 const router = Router()
@@ -10,7 +10,7 @@ const cartsManager = new CartsManager(__dirname + '/models/carts.json');
 
 
 router.post('/', async (req, res) => {
-    const newCart = await cartModel.create({
+    const newCart = await CartModel.create({
         products: [],
     })
 
@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
     const { cid } = req.params;
 	
-    const cartFinded = await cartModel.findById(cid).populate('products.product');
+    const cartFinded = await CartModel.findById(cid).populate('products.product');
 
     const status = cartFinded ? 200 : 404;
 
@@ -34,7 +34,7 @@ router.put('/:cid', async (req, res) => {
     const { cid } = req.params;
     const { products } = req.body
 
-    const cartFinded = await cartModel.findById(cid).lean();
+    const cartFinded = await CartModel.findById(cid).lean();
     if(!cartFinded) res.status(404).json({ message: 'error' });
 
     const newCart = {
@@ -42,7 +42,7 @@ router.put('/:cid', async (req, res) => {
         products
     }
     
-    const cartUpdated = await cartModel.findByIdAndUpdate(cid,newCart, {
+    const cartUpdated = await CartModel.findByIdAndUpdate(cid,newCart, {
         new: true,
     }).populate('products.product')
 
@@ -55,7 +55,7 @@ router.put('/:cid/product/:pid', async (req, res)=> {
     const { pid } = req.body;
     const {newQuantity} = req.body;
 
-    const cartUpdated = await cartModel.updateProductQuantity(cid, pid, newQuantity);
+    const cartUpdated = await CartModel.updateProductQuantity(cid, pid, newQuantity);
     res.status(201).json({message: 'Carrito actualizado', cart:cartUpdated})
 });
 
@@ -64,7 +64,7 @@ router.put('/:cid/product/:pid', async (req, res)=> {
 router.post('/:cid/product/:pid', async (req, res) => {
     const { cid, pid } = req.params;
 
-    const cartFinded = await cartModel.findById(cid);
+    const cartFinded = await CartModel.findById(cid);
     if(!cartFinded) res.status(404).json({ message: 'error' });
 
     const indexProd = cartFinded.products.findIndex(prod => prod.product.toString() === pid);
@@ -73,7 +73,7 @@ router.post('/:cid/product/:pid', async (req, res) => {
     } else {
         cartFinded.products[indexProd] = { product: cartFinded.products[indexProd].product, quantity: cartFinded.products[indexProd].quantity + 1 }
     }
-    const cartUpdated = await cartModel.findByIdAndUpdate(cid,cartFinded, {
+    const cartUpdated = await CartModel.findByIdAndUpdate(cid,cartFinded, {
         new: true,
     }).populate('products.product')
 
@@ -86,14 +86,14 @@ router.post('/:cid/product/:pid', async (req, res) => {
 router.delete('/:cid', async (req, res) => {
     const { cid } = req.params;
 
-    const cartFinded = await cartModel.findById(cid).lean();
+    const cartFinded = await CartModel.findById(cid).lean();
     if(!cartFinded) res.status(404).json({ message: 'error' });
 
     const newCart = {
         ...cartFinded,
         products: []
     }
-    const cartUpdated = await cartModel.findByIdAndUpdate(cid,newCart, {
+    const cartUpdated = await CartModel.findByIdAndUpdate(cid,newCart, {
         new: true,
     })
 
@@ -103,13 +103,13 @@ router.delete('/:cid', async (req, res) => {
 router.delete('/:cid/product/:pid', async (req, res) => {
     const { cid } = req.params;
     const { pid } = req.params;
-    const cartUpdated = await cartModel.deleteProductFromCart(cid, pid);
+    const cartUpdated = await CartModel.deleteProductFromCart(cid, pid);
 
-    res.status(201).json({ message: 'Products del carrito borrado', cart: cartUpdated});
+    res.status(201).json({ message: 'Producto del carrito borrado', cart: cartUpdated});
 });
 
 
 
 
 
-export default router
+export default router;

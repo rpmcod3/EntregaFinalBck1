@@ -1,11 +1,11 @@
 import { Router } from "express";
-import ProductsManager from '../managers/productManager.js'
+import ProductsManager from '../managers/productManager.js';
 import { __dirname } from '../utils.js'
 import { socketServer } from "../index.js";
-import { productModel } from "../models/Product.model.js";
+import { ProductsModel } from "../models/Product.model.js";
 
 const router = Router()
-
+const productManager = new ProductsManager();
 
 
     router.get("/", async (req, res) => {
@@ -15,7 +15,7 @@ const router = Router()
           'desc': -1
         }
       
-        const products = await productModel.paginate(
+        const products = await ProductsModel.paginate(
           { ...query },
           { 
             limit,
@@ -35,7 +35,7 @@ const router = Router()
     router.get("/:id", async (req, res) => {
         const { id } = req.params;
       
-        const productFinded = await productModel.findById(id);
+        const productFinded = await ProductsModel.findById(id);
       
         const status = productFinded ? 200 : 404;
       
@@ -47,7 +47,7 @@ const router = Router()
      
       
         const prod = req.body;
-        const result = await productModel.create({
+        const result = await ProductsModel.create({
           ...prod,
        
         });
@@ -59,7 +59,7 @@ const router = Router()
         const { body, params } = req;
         const { id } = params;
         const product = body;
-        const productUpdated = await productModel.findByIdAndUpdate(id, {
+        const productUpdated = await ProductsModel.findByIdAndUpdate(id, {
           ...product,
          
         }, { new: true });
@@ -69,7 +69,7 @@ const router = Router()
       
       router.delete("/:id", async (req, res) => {
         const { id } = req.params;
-        const isDelete = await productModel.findByIdAndDelete(id);
+        const isDelete = await ProductsModel.findByIdAndDelete(id);
       
         res.status(isDelete ? 200 : 400).json({ payload: isDelete });
       });
