@@ -18,16 +18,19 @@
       <p>{{this.price}}</p>
       <p>{{this.description}}</p>
       <a href="/api/products/delete/{{this.id}}" class="btn">Eliminar</a>
-      <a href="/addToCar/{{this.id}}/addToCard" class="btn">Agregar carrito</a>
+      <a href="/addToCart/{{this.id}}/addToCart" class="btn">Agregar carrito</a>
     </div>
   </div>
   {{/each}}
 </div>
 
+
+
 <form action="/products" method="GET" id="filterForm">
   <label for="query">Buscar:</label>
   <input type="text" name="query" id="query" placeholder="Buscar producto..." value="{{query}}">
   
+
   <label for="sort">Ordenar:</label>
   <select name="sort" id="sort">
     <option value="" {{#unless sort}}selected{{/unless}}>Sin ordenar</option>
@@ -56,3 +59,4 @@
     <button class="btn disabled" disabled>Página siguiente</button>
   {{/if}}
 </div>
+
