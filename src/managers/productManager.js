@@ -54,7 +54,7 @@ const connectDB = async () => {
     
     async addProduct(product) {
       try {
-        const newProduct = new Product({
+        const newProduct = new ProductsModel({
           title: product.title,
           description: product.description || '',
           code: product.code,
