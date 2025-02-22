@@ -111,25 +111,3 @@ socketServer.on('connection', async (socket)=>{
 export default app;
 
 
-
-
-    /* 
-    socket.on('nuevo-producto', async (producto) => {
-        await productManager.addProduct(producto);
-        const updatedProductsList = await productManager.getAllProducts(); // Actualiza la lista de productos
-        socketServer.emit('realtime', updatedProductsList); // Emite la lista actualizada
-    });
-    
-    socket.on('update-product', async (producto) => {
-        await productManager.updateProduct(producto, producto.id);
-        const updatedProductsList = await productManager.getAllProducts(); // Actualiza la lista de productos
-        socketServer.emit('realtime', updatedProductsList); // Emite la lista actualizada
-    });
-    
-    socket.on('delete-product', async (id) => {
-        await productManager.deleteProduct(id);
-        const updatedProductsList = await productManager.getAllProducts(); // Actualiza la lista de productos
-        socketServer.emit('realtime', updatedProductsList); // Emite la lista actualizada
-    });
-
- */
